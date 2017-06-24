@@ -14,6 +14,7 @@ namespace Beast.Net
         public Guid Id { get; set; } = Guid.NewGuid();
 
         public IDictionary<string, object> Properties { get; } = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
+        public IConnectionContext Context { get; set; }
 
         readonly ILogger _logger;
         readonly List<byte> _sequence = new List<byte>();
@@ -32,6 +33,11 @@ namespace Beast.Net
         {
             var buffer = Encoding.ASCII.GetBytes(message);
             await SendRaw(buffer);
+        }
+
+        public async Task SendErrorAsync(string error)
+        {
+            await SendAsync(error.ToAnsiColor(ConsoleColor.Red));
         }
 
         async Task SendRaw(byte[] data)
@@ -192,7 +198,7 @@ namespace Beast.Net
                                 break;
                             case 0x0A: // New Line \n
                             case 0x0D: // Carriage Return \r
-                                //await _simulator.Process(this, new StringInput(Encoding.ASCII.GetString(_buffer.ToArray())));
+                                await Context?.ProcessInput(Encoding.ASCII.GetString(_buffer.ToArray()));
                                 _buffer.Clear();
                                 return;
                             default:

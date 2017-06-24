@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,23 +11,30 @@ namespace Beast.Net
 {
     public class TcpListener : IListener
     {
-        TcpSettings _settings;
-        Socket _listener;
-        CancellationTokenSource _cancellationSource;
-        ILogger _logger;
-        //IConnectionManager _connectionManager;
-        //ISimulator _simulator;
+        readonly TcpSettings _settings;
+        readonly ILogger _logger;
+        readonly IConnectionManager _connectionManager;
         readonly List<TcpConnection> _connections = new List<TcpConnection>();
 
-        public TcpListener(ILoggerFactory loggerFactory, IOptions<TcpSettings> settings)
+        Socket _listener;
+        CancellationTokenSource _cancellationSource;
+
+        public TcpListener(
+            IConnectionManager connectionManager, 
+            ILoggerFactory loggerFactory, 
+            IOptions<TcpSettings> settings)
         {
+            _connectionManager = connectionManager;
             _settings = settings.Value;
             _logger = loggerFactory.CreateLogger<TcpListener>();
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            _connectionManager.Disconnected += OnConnectionDisconnected;
         }
 
         public async Task Start()
         {
+            _cancellationSource = new CancellationTokenSource();
             await ListenAsync(_settings.Port, _cancellationSource);
         }
 
@@ -54,12 +60,10 @@ namespace Beast.Net
 
                     _logger.LogInformation("Accepted a socket connection from '{0}'.", client.RemoteEndPoint.ToString());
 
-                    //var connection = new SocketConnection(client, _logger, _simulator);
-                    //_connections.Add(connection);
-
-                    //_connectionManager.Add(connection);
-
-                    //connection.BeginReceive();
+                    var connection = new TcpConnection(client, _logger);
+                    _connections.Add(connection);
+                    _connectionManager.Add(connection);
+                    connection.BeginReceive();
                 }
             }
             catch (Exception ex)
@@ -70,15 +74,28 @@ namespace Beast.Net
 
             foreach (var conn in _connections)
             {
-                //_connectionManager.Remove(conn);
+                _connectionManager.Remove(conn);
                 await conn.CloseAsync();
             }
 
             if (_listener != null)
             {
+                _connectionManager.Disconnected -= OnConnectionDisconnected;
                 _listener.Shutdown(SocketShutdown.Both);
                 _listener.Dispose();
                 _listener = null;
+            }
+        }
+
+        void OnConnectionDisconnected(object sender, IConnection e)
+        {
+            var conn = e as TcpConnection;
+            if (conn == null)
+                return;
+
+            if (_connections.Contains(conn))
+            {
+                _connections.Remove(conn);
             }
         }
     }
