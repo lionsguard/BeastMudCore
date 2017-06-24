@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Beast.Abstractions\Beast.Abstractions.csproj" />
     <ProjectReference Include="..\Beast.Net\Beast.Net.csproj" />
+    <ProjectReference Include="..\Beast.Sqlite\Beast.Sqlite.csproj" />
     <ProjectReference Include="..\Beast\Beast.csproj" />
   </ItemGroup>
 

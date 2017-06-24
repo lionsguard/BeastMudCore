@@ -1,0 +1,1 @@
+That name cannot be used as a character name. Please try another name.

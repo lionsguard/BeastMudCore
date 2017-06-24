@@ -20,13 +20,14 @@ namespace Beast.CommandLine
                 .AddLogging();
 
             var beast = services.AddBeast()
+                .AddSqlite()
                 .AddTcpListener(options =>
                 {
                     options.Port = 4000;
                 })
                 .Configure<ContentOptions>(options =>
                 {
-                    options.RootPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\beastmud_content");
+                    options.RootPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\content");
                 });
 
             var serviceProvider = services.BuildServiceProvider();

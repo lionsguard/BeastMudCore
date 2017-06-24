@@ -71,7 +71,7 @@ namespace Beast.Net
             var data = new byte[bytesReceived];
             Array.Copy(buffer.Array, 0, data, 0, bytesReceived);
 
-            System.Diagnostics.Debug.WriteLine("Recevied '{0}' from '{1}'", string.Join(",", data.Select(o => o.ToString())), Id);
+            System.Diagnostics.Debug.WriteLine("Received '{0}' from '{1}'", string.Join(",", data.Select(o => o.ToString())), Id);
 
             await ParseBytes(data);
 

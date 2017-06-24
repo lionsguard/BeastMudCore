@@ -1,4 +1,6 @@
-﻿using Beast.ConnectionContexts;
+﻿using Beast.Characters;
+using Beast.ConnectionContexts;
+using Beast.Security;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Beast
@@ -17,6 +19,9 @@ namespace Beast
             Services.AddSingleton<IConnectionManager, ConnectionManager>();
             Services.AddSingleton<IContentProvider, ContentProvider>();
             Services.AddSingleton<IConnectionContextFactory, ConnectionContextFactory>();
+
+            Services.AddTransient<IPasswordValidator, PasswordValidator>();
+            Services.AddTransient<ICharacterNameValidator, CharacterNameValidator>();
         }
     }
 }

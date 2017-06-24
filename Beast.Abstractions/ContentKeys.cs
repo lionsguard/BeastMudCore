@@ -11,7 +11,15 @@
         CreateCharacterPassword,
         CreateCharacterPasswordConfirm,
         CreateCharacterEmail,
+        CreateCharacterEmailRequired,
         CreateCharacterRealNameQuestion,
         CreateCharacterRealName,
+        ReservedWords,
+        PasswordRequirements,
+        PasswordRequiredLength,
+        PasswordsDoNotMatch,
+        CharacterNameRequirements,
+        CharacterNameAlreadyTaken,
+        CharacterNameInvalid,
     }
 }

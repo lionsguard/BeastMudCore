@@ -1,0 +1,8 @@
+[36mYour email address is required in order to create an account. This 
+provides you with the ability to reset your password and verifies your 
+account. Email addresses are not sold to third parties nor shared with any 
+other organization. You may receive notifications about updates or coming 
+events but you amy opt out of those if they become tiresome.
+
+[33mEmail Address:
+[39m

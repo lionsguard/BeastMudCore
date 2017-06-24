@@ -1,0 +1,2 @@
+The name entered has already been taken. Please try another name or 
+alternate spelling.

@@ -1,0 +1,7 @@
+[36m
+Character names should not contain racial slurs, profanity 
+or terms of a vulgar nature. Any character created may be 
+deleted based solely on the name provided.
+
+[33mDesired Character Name:
+[39m

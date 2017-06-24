@@ -1,0 +1,13 @@
+[32m
+Character names in Perenthia should reflect the pseudo-medieval 
+fantasy nature of the game. Please choose a character name that
+reflects the persona you wish to portray.
+
+Character names must be unique so if the one you want is already 
+taken you can vary the spelling or compound another word to make
+your own version of the name.
+
+Character names must be at least three (3) letters in length and 
+may not contain numbers, spaces or other special characters, with 
+the exception of the apostrophe symbol (') and the dash symbol (-).
+[39m

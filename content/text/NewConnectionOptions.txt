@@ -1,0 +1,8 @@
+
+
+    [35m1. [37mLogin
+	[35m2. [37mCreate a New Character
+	[35m3. [37mExit
+	
+[33mEnter an option or type your character name to begin:
+[39m

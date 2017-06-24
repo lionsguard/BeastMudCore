@@ -1,0 +1,1 @@
+Character names must be at least three (3) characters in length and may only contain letters, the(') or (-) symbols.
