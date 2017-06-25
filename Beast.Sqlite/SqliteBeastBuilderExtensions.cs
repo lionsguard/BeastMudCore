@@ -3,6 +3,7 @@ using Beast.Sqlite;
 using Beast.Sqlite.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Beast
 {
@@ -10,8 +11,12 @@ namespace Beast
     {
         public static IBeastBuilder AddSqlite(this IBeastBuilder builder)
         {
-            builder.Services.AddDbContext<SqliteContext>(options => options.UseSqlite("Data Source=beastmud.db"));
+            return builder.AddSqlite(options => options.UseSqlite("Data Source=beastmud.db"));
+        }
 
+        public static IBeastBuilder AddSqlite(this IBeastBuilder builder, Action<DbContextOptionsBuilder> optionsAction)
+        {
+            builder.Services.AddDbContext<SqliteContext>(optionsAction);
             builder.Services.AddTransient<IUserRepository, UserRepository>();
 
             return builder;

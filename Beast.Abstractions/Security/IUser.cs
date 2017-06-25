@@ -13,7 +13,7 @@ namespace Beast.Security
         DateTime CreatedDate { get; set; }
         DateTime LastLoginDate { get; set; }
         bool IsLockedOut { get; set; }
-        bool IsDeactivated { get; set; }
+        bool IsActive { get; set; }
         bool IsEmailVerified { get; set; }
     }
 }

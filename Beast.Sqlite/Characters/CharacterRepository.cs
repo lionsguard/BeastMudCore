@@ -1,8 +1,7 @@
 ﻿using Beast.Characters;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Beast.Security;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 
 namespace Beast.Sqlite.Characters
@@ -14,24 +13,36 @@ namespace Beast.Sqlite.Characters
         {
         }
 
-        public Task<ICharacter> GetCharacterById(Guid id)
+        public async Task<ICharacter> GetCharacterById(Guid id)
         {
-            throw new NotImplementedException();
+            return await Context.Characters.FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public Task<ICharacter> GetCharacterByName(string name)
+        public async Task<ICharacter> GetCharacterByName(string name)
         {
-            throw new NotImplementedException();
+            return await Context.Characters.FirstOrDefaultAsync(o => o.Name == name);
         }
 
-        public Task<ICharacter> GetCharacterForUser(IUser user)
+        public async Task<ICharacter> GetCharacterForUser(IUser user)
         {
-            throw new NotImplementedException();
+            return await Context.Characters.FirstOrDefaultAsync(o => o.UserId == user.Id);
         }
 
-        public Task SaveCharacter(ICharacter character)
+        public async Task SaveCharacter(ICharacter character)
         {
-            throw new NotImplementedException();
+            var c = character as Character;
+            if (c == null)
+                return;
+
+            if (await Context.Characters.AnyAsync(o => o.Id == character.Id))
+            {
+                Context.Update(c);
+            }
+            else
+            {
+                await Context.AddAsync(c);
+            }
+            await Context.SaveChangesAsync();
         }
     }
 }

@@ -19,10 +19,8 @@ namespace Beast.ConnectionContexts
         readonly ICharacterNameValidator _characterNameValidator;
         readonly IPasswordValidator _passwordValidator;
 
-        ReservedName _name;
+        User _user;
         SecureString _password;
-        string _email;
-        string _realName;
 
         public NewCharacterConnectionContext(IServiceProvider services, IConnection connection) 
             : base(services, connection)
@@ -88,9 +86,24 @@ namespace Beast.ConnectionContexts
             }
         }
 
-        Task Complete()
+        async Task Complete()
         {
-            return Task.CompletedTask;
+            using (var userRepo = Services.GetService<IUserRepository>())
+            {
+                await userRepo.SaveUser(_user);
+            }
+            using (var charRepo = Services.GetService<ICharacterRepository>())
+            {
+                await charRepo.SaveCharacter(new Character
+                {
+                    UserId = _user.Id,
+                    Name = _user.Name
+                });
+            }
+
+            await Connection.SendAsync(string.Format(Content.GetText(ContentKeys.CreateCharacterComplete), _user.Name));
+
+            Connection.Context = ContextFactory.CreatePlayContext(Connection);
         }
 
         async Task<bool> CharacterName(string input)
@@ -105,19 +118,18 @@ namespace Beast.ConnectionContexts
             using (var userRepo = Services.GetService<IUserRepository>())
             {
                 // Ensure it doesn't exist in the database.
-                if (await userRepo.GetUserByName(input) != null)
+                if (await userRepo.IsNameAvailable(input))
                 {
                     await Connection.SendErrorAsync(Content.GetText(ContentKeys.CharacterNameAlreadyTaken));
                     return false;
                 }
 
-                // Reserve the name for a short time.
-                _name = await userRepo.ReserveName(input);
-                if (_name == null)
+                // Create the character to reserve the name.
+                _user = new User
                 {
-                    await Connection.SendErrorAsync(Content.GetText(ContentKeys.CharacterNameAlreadyTaken));
-                    return false;
-                }
+                    Name = input
+                };
+                await userRepo.SaveUser(_user);
             }
 
             return true;
@@ -159,7 +171,7 @@ namespace Beast.ConnectionContexts
                 return false;
             }
 
-            _email = input;
+            _user.Email = input;
             return true;
         }
 
@@ -176,7 +188,7 @@ namespace Beast.ConnectionContexts
 
         Task<bool> RealName(string input)
         {
-            _realName = input;
+            _user.RealName = input;
             return Task.FromResult(true);
         }
     }

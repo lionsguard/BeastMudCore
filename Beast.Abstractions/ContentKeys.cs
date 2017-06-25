@@ -14,6 +14,7 @@
         CreateCharacterEmailRequired,
         CreateCharacterRealNameQuestion,
         CreateCharacterRealName,
+        CreateCharacterComplete,
         ReservedWords,
         PasswordRequirements,
         PasswordRequiredLength,

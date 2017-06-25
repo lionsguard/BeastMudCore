@@ -1,7 +1,7 @@
 ﻿using Beast.Security;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Beast.Sqlite.Security
@@ -13,34 +13,50 @@ namespace Beast.Sqlite.Security
         {
         }
 
-        public Task<IUser> GetUserByEmail(string email)
+        public async Task<IUser> GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+            return await Context.Users.FirstOrDefaultAsync(o => o.Email == email);
         }
 
-        public Task<IUser> GetUserById(Guid id)
+        public async Task<IUser> GetUserById(Guid id)
         {
-            throw new NotImplementedException();
+            return await Context.Users.FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public Task<IUser> GetUserByName(string name)
+        public async Task<IUser> GetUserByName(string name)
         {
-            throw new NotImplementedException();
+            return await Context.Users.FirstOrDefaultAsync(o => o.Name == name);
         }
 
-        public Task<bool> IsValidReservedName(ReservedName name)
+        public async Task<bool> IsNameAvailable(string name)
         {
-            throw new NotImplementedException();
+            var dt = DateTime.UtcNow;
+
+            // Delete all inactive users created more than 4 hours ago.
+            var inactives = await Context.Users.Where(o => !o.IsActive && (dt - o.CreatedDate).Hours > 4).ToListAsync();
+            inactives.ForEach(o => Context.Entry(o).State = EntityState.Deleted);
+
+            await Context.SaveChangesAsync();
+
+            return !(await Context.Users.AnyAsync(o => o.Name == name));
         }
 
-        public Task<ReservedName> ReserveName(string name)
+        public async Task SaveUser(IUser user)
         {
-            throw new NotImplementedException();
-        }
+            var usr = user as User;
+            if (usr == null)
+                return;
 
-        public Task SaveUser(IUser user)
-        {
-            throw new NotImplementedException();
+            if (await Context.Users.AnyAsync(o => o.Id == user.Id))
+            {
+                Context.Users.Update(usr);
+            }
+            else
+            {
+                await Context.Users.AddAsync(usr);
+            }
+
+            await Context.SaveChangesAsync();
         }
     }
 }
